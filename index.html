@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hamburg Music Party – Snake</title>
+<style>
+  :root{
+    --hud-bg: rgba(0,0,0,.55);
+    --hud-text: #fff;
+    --accent: #00d6ff;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:url("assets/party-bg.jpg") center/cover no-repeat;
+    z-index:0; pointer-events:none;
+    filter: saturate(1.05);
+  }
+  * { box-sizing: border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    color: var(--hud-text);
+    overflow:hidden;
+  }
+  .wrap{ position:relative; z-index:1; display:grid; place-items:center; height:100dvh; padding:16px; }
+  .stage{ width:min(92vw, 720px); aspect-ratio: 1 / 1; position:relative; border-radius: 18px; overflow:hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,.35); background: rgba(0,0,0,.25); outline: 2px solid rgba(255,255,255,.08); }
+  canvas#game{ position:relative; z-index:1; width:100%; height:100%; display:block; image-rendering: pixelated; }
+  .hud{ position:absolute; z-index:2; inset:0; pointer-events:none; }
+  .badge{ pointer-events:auto; position:absolute; top:8px; left:8px; background: var(--hud-bg);
+    border:1px solid rgba(255,255,255,.18); padding:8px 10px; border-radius:12px; font-weight:600; font-size:14px;
+    display:flex; gap:10px; align-items:center; }
+  .badge .dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block; }
+  .score{ position:absolute; top:8px; right:8px; background: var(--hud-bg);
+    border:1px solid rgba(255,255,255,.18); padding:8px 10px; border-radius:12px; font-weight:700; font-size:14px; }
+  .controls{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    display:flex; gap:8px; pointer-events:auto; flex-wrap:wrap; justify-content:center; }
+  .btn{ background: var(--hud-bg); border:1px solid rgba(255,255,255,.18); color:var(--hud-text);
+    padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; font-size:14px; }
+  .btn:hover{ background: rgba(0,0,0,.7); }
+  .overlay{ position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center;
+    background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
+  .hidden{ display:none !important; }
+  .card{ width:min(92vw, 520px); background: rgba(0,0,0,.75); border:1px solid rgba(255,255,255,.16);
+    border-radius:18px; padding:20px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+  .card h1{ font-size: clamp(22px, 3.6vw, 28px); margin:0 0 8px 0; }
+  .card p{ margin: 0 0 14px 0; opacity:.9; }
+  .row{ display:flex; gap:10px; align-items:center; }
+  .row input[type="text"]{ flex:1; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18);
+    background:#0b0b0b; color:#fff; font-size:16px; }
+  .row .btn{ padding:12px 16px; }
+  .fine{ font-size:12px; opacity:.75; margin-top:8px; }
+  .center{ text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="stage" id="stage">
+<canvas id="game"></canvas>
+<div class="hud">
+<div class="badge" id="globalBadge"><span class="dot"></span>
+<span>Global: <strong id="globalBest">–</strong></span></div>
+<div class="score">Score: <span id="scoreNow">0</span> · Best (local): <span id="bestLocal">0</span></div>
+<div class="controls">
+<button class="btn" id="btnPause">Pause</button>
+<button class="btn" id="btnRestart">Neu starten</button>
+</div>
+</div>
+<div class="overlay" id="ovStart">
+<div class="card">
+<h1>Hamburg Music Party – Snake</h1>
+<p>Bitte gib deinen Namen ein, um zu starten.</p>
+<div class="row">
+<input id="playerName" type="text" placeholder="Dein Name" maxlength="24" />
+<button class="btn" id="btnStart" disabled>Start</button>
+</div>
+<div class="fine">Name: 2–24 Zeichen. Wird nur für die Highscore-Anzeige verwendet.</div>
+</div>
+</div>
+<div class="overlay hidden" id="ovOver">
+<div class="card center">
+<h1>Game Over</h1>
+<p>Score: <strong id="finalScore">0</strong></p>
+<p class="fine">Tipp: Mit den Pfeiltasten oder WASD steuern. Auf Mobilgeräten: wischen.</p>
+<div style="margin-top:10px">
+<button class="btn" id="btnAgain">Nochmal spielen</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+// Game logic and functions as provided earlier (omitted for brevity in this snippet)
+// Please use the full code from the previous answer including game logic here.
+</script>
+</body>
+</html>
