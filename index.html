@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hamburg Music Party – Snake</title>
+<base href="./">
+<style>
+  :root{
+    --bg-desktop: url("assets/party-bg-desktop.jpg");
+    --bg-mobile:  url("assets/party-bg-mobile.jpg");
+    --hud-bg: rgba(0,0,0,.55); --hud-text:#fff; --accent:#00d6ff;
+  }
+  body::before{
+    content:""; position:fixed; inset:0;
+    background: var(--bg-desktop) center/cover no-repeat;
+    z-index:0; pointer-events:none; filter:saturate(1.05);
+  }
+  @media (max-width: 768px) {
+    body::before{ background: var(--bg-mobile) center top / cover no-repeat; }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans";
+       color:var(--hud-text); overflow:hidden; background:#000;}
+  .wrap{position:relative;z-index:1;display:grid;place-items:center;height:100dvh;padding:16px}
+  .stage{
+    width:min(92vw,720px);aspect-ratio:1/1;position:relative;border-radius:18px;overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.35);background:transparent;outline:2px solid rgba(255,255,255,.08)
+  }
+  canvas#game{position:relative;z-index:1;width:100%;height:100%;display:block;image-rendering:pixelated;background:transparent}
+  .hud{position:absolute;z-index:2;inset:0;pointer-events:none}
+  .score{position:absolute;top:8px;right:8px;background:var(--hud-bg);border:1px solid rgba(255,255,255,.18);
+         padding:8px 10px;border-radius:12px;font-weight:700;font-size:14px}
+  .controls{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap;justify-content:center}
+  .btn{background:var(--hud-bg);border:1px solid rgba(255,255,255,.18);color:var(--hud-text);padding:10px 14px;border-radius:12px;cursor:pointer;
+       font-weight:600;font-size:14px;backdrop-filter:blur(4px)}
+  .btn:hover{background:rgba(0,0,0,.7)}
+  .overlay{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(2px)}
+  .hidden{display:none!important}
+  .card{width:min(92vw,520px);background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+  .card h1{font-size:clamp(22px,3.6vw,28px);margin:0 0 8px 0}
+  .card p{margin:0 0 14px 0;opacity:.9}
+  .row{display:flex;gap:10px;align-items:center}
+  .row input[type="text"]{flex:1;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:#0b0b0b;color:#fff;font-size:16px}
+  .row .btn{padding:12px 16px}
+  .fine{font-size:12px;opacity:.75;margin-top:8px}
+  .center{text-align:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="stage" id="stage">
+      <canvas id="game"></canvas>
+      <div class="hud">
+        <div class="score">
+          Score: <span id="scoreNow">0</span> · Best (local): <span id="bestLocal">0</span><span id="seedTag"></span>
+        </div>
+        <div class="controls">
+          <button class="btn" id="btnPause">Pause</button>
+          <button class="btn" id="btnRestart">Neu starten</button>
+        </div>
+      </div>
+      <div class="overlay" id="ovStart">
+        <div class="card">
+          <h1>Hamburg Music Party – Snake</h1>
+          <p>Bitte gib deinen Namen ein, um zu starten.</p>
+          <div class="row">
+            <input id="playerName" type="text" placeholder="Dein Name" maxlength="24" />
+            <button class="btn" id="btnStart" disabled>Start</button>
+          </div>
+          <div class="fine">Name: 2–24 Zeichen. Wird nur für die lokale Highscore-Anzeige verwendet.</div>
+        </div>
+      </div>
+      <div class="overlay hidden" id="ovOver">
+        <div class="card center">
+          <h1>Game Over</h1>
+          <p>Score: <strong id="finalScore">0</strong></p>
+          <p class="fine">Steuerung: Pfeiltasten/WASD · Mobil: Wischen.</p>
+          <div style="margin-top:10px">
+            <button class="btn" id="btnAgain">Nochmal spielen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const VERSION='v2';
+function withV(url){return `url("${url}?${VERSION}")`}
+document.documentElement.style.setProperty('--bg-desktop', withV('assets/party-bg-desktop.jpg'));
+document.documentElement.style.setProperty('--bg-mobile',  withV('assets/party-bg-mobile.jpg'));
+
+const GRID=24,TICK_MS=85;
+const params=new URLSearchParams(location.search);
+const SEED=params.get('seed')||'default';
+const LS={name:`snake_name_${SEED}`,best:`snake_best_${SEED}`};
+const $=s=>document.querySelector(s);
+function hideAllOverlays(){document.querySelectorAll('.overlay').forEach(el=>el.classList.add('hidden'))}
+function showOverlay(id){hideAllOverlays();document.getElementById(id).classList.remove('hidden')}
+
+const stage=$('#stage'),canvas=$('#game'),ctx=canvas.getContext('2d',{alpha:true});
+let cell,size;
+function fit(){const r=stage.getBoundingClientRect();const edge=Math.min(r.width,r.height);
+  canvas.width=canvas.height=size=Math.floor(edge);cell=Math.floor(size/GRID)}
+addEventListener('resize',fit);
+
+let snake,dir,apple,score,bestLocal,running,timer,name;
+function resetGame(){snake=[{x:12,y:12}];dir={x:1,y:0};apple=spawnApple();score=0;$('#scoreNow').textContent=score;
+  running=true;draw();loop()}
+function spawnApple(){while(true){const a={x:rnd(0,GRID-1),y:rnd(0,GRID-1)};if(!snake.some(s=>s.x===a.x&&s.y===a.y))return a}}
+function rnd(min,max){return (Math.random()*(max-min+1)|0)+min}
+function loop(){clearTimeout(timer);if(!running)return;timer=setTimeout(()=>{update();draw();loop()},TICK_MS)}
+function update(){const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+  if(head.x<0)head.x=GRID-1;if(head.x>=GRID)head.x=0;if(head.y<0)head.y=GRID-1;if(head.y>=GRID)head.y=0;
+  if(snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver();return}
+  snake.unshift(head);if(head.x===apple.x&&head.y===apple.y){score++;$('#scoreNow').textContent=score;apple=spawnApple()}else snake.pop()}
+function draw(){
+  ctx.clearRect(0,0,size,size);
+  ctx.fillStyle="rgba(0,0,0,.18)";
+  ctx.fillRect(0,0,size,size);
+  ctx.strokeStyle="rgba(255,255,255,.06)";ctx.lineWidth=1;
+  for(let i=1;i<GRID;i++){const p=Math.floor(i*cell)+.5;
+    ctx.beginPath();ctx.moveTo(p,0);ctx.lineTo(p,size);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,p);ctx.lineTo(size,p);ctx.stroke();}
+  drawCell(apple.x,apple.y,"#ff3b3b");
+  snake.forEach((s,i)=>drawCell(s.x,s.y,i?"rgba(255,255,255,.9)":"#00d6ff"));
+}
+function drawCell(x,y,color){
+  const pad=Math.floor(cell*0.12);ctx.fillStyle=color;ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(x*cell+pad,y*cell+pad,cell-2*pad,cell-2*pad,6);
+  else ctx.rect(x*cell+pad,y*cell+pad,cell-2*pad,cell-2*pad);
+  ctx.fill();
+}
+
+const keys={ArrowUp:{x:0,y:-1},w:{x:0,y:-1},W:{x:0,y:-1},
+            ArrowDown:{x:0,y:1},s:{x:0,y:1},S:{x:0,y:1},
+            ArrowLeft:{x:-1,y:0},a:{x:-1,y:0},A:{x:-1,y:0},
+            ArrowRight:{x:1,y:0},d:{x:1,y:0},D:{x:1,y:0}};
+addEventListener('keydown',e=>{const v=keys[e.key];if(!v)return;if((v.x&&dir.x)||(v.y&&dir.y))return;dir=v});
+let touchStart=null;
+canvas.addEventListener('touchstart',e=>{const t=e.changedTouches[0];touchStart={x:t.clientX,y:t.clientY}},{passive:true});
+canvas.addEventListener('touchend',e=>{if(!touchStart)return;const t=e.changedTouches[0],dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;
+  if(Math.abs(dx)>Math.abs(dy))dir=dx>0?{x:1,y:0}:{x:-1,y:0};else dir=dy>0?{x:0,y:1}:{x:0,y:-1};touchStart=null});
+
+$('#btnPause').addEventListener('click',()=>{running=!running;if(running)loop();else clearTimeout(timer);
+  $('#btnPause').textContent=running?"Pause":"Weiter"});
+$('#btnRestart').addEventListener('click',resetGame);
+$('#btnAgain').addEventListener('click',()=>{hideAllOverlays();resetGame()});
+
+$('#playerName').addEventListener('input',e=>{const v=String(e.target.value||"").trim();$('#btnStart').disabled=!(v.length>=2&&v.length<=24)});
+$('#btnStart').addEventListener('click',()=>{name=String($('#playerName').value).trim();localStorage.setItem(LS.name,name);
+  hideAllOverlays();resetGame()});
+function initName(){fit();const saved=localStorage.getItem(LS.name)||"";$('#playerName').value=saved;
+  $('#btnStart').disabled=!(saved.length>=2&&saved.length<=24);bestLocal=Number(localStorage.getItem(LS.best)||0);
+  $('#bestLocal').textContent=bestLocal;const tag=params.get('seed')||'';if(tag&&tag!=='default')$('#seedTag').textContent=` · Set: ${tag}`;
+  showOverlay('ovStart')}
+function gameOver(){running=false;clearTimeout(timer);$('#finalScore').textContent=score;
+  if(score>bestLocal){bestLocal=score;localStorage.setItem(LS.best,String(bestLocal));$('#bestLocal').textContent=bestLocal}
+  showOverlay('ovOver')}
+(function boot(){fit();initName();draw()})();
+</script>
+</body>
+</html>
