@@ -14,7 +14,7 @@
   .cta {
   position: fixed;           /* statt absolute */
   top: 28vh;
-  left: 60%;
+  left: 70%;
   transform: translateX(-50%);
   background: rgba(249,216,73,0.9);
   color: #000;
@@ -29,8 +29,8 @@
 }
 @media (max-width: 768px) {
   .cta {
-    top: 18vh;
-    left: 60%;
+    top: 24vh;
+    left: 55%;
     font-size: 15px;
     padding: 8px 14px;
   }
@@ -86,6 +86,17 @@
   .row .btn{padding:12px 16px}
   .fine{font-size:12px;opacity:.75;margin-top:8px}
   .center{text-align:center}
+  /* 🔧 Vorrang für CTA-Button-Farbe */
+.btn.cta {
+  background: rgba(249,216,73,0.9) !important;
+  color: #000 !important;
+  border-color: rgba(249,216,73,1) !important;
+  box-shadow: 0 0 20px rgba(249,216,73,0.6) !important;
+}
+.btn.cta:hover {
+  background: rgba(249,216,73,1) !important;
+  box-shadow: 0 0 28px rgba(249,216,73,0.9) !important;
+}
 </style>
 </head>
 <body>
