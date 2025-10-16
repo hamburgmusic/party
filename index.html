@@ -13,7 +13,7 @@
   }
  .cta {
   position: fixed;
-  top: 230px;     /* feste Pixelposition */
+  top: 26vh;    
   left: 70%;      
   transform: translateX(-50%);
   background: rgba(249,216,73,0.9);
@@ -48,12 +48,12 @@
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans";
        color:var(--hud-text); overflow:hidden; background:#000;}
   .wrap{position:relative;z-index:1;display:grid;place-items:center;height:100dvh;padding:16px}
-  .stage {
+.stage {
   display: block;
-  width: 640px;       /* feste Breite */
-  height: 640px;      /* feste Höhe – quadratisch */
+  width: min(36vw, 640px);
+  aspect-ratio: 1 / 1;
   position: relative;
-  margin: 240px auto 0;  /* Abstand von oben z. B. 240px */
+  margin-top: 36vh;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,.35);
