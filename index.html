@@ -49,8 +49,10 @@
   .wrap {
   position: relative;
   z-index: 1;
-  display: grid;
-  place-items: center;
+ display: grid;
+  justify-items: center;
+  align-items: start; /* statt center */
+  padding-top: 20vh; /* dann sitzt das Spielfeld immer mit 20 vh Abstand oben */
   width: 100vw;
   height: 100vh; /* statt 100dvh */
   padding: 16px;
