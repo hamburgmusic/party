@@ -11,10 +11,10 @@
     --bg-mobile:  url("assets/party-bg-mobile.jpg");
     --hud-bg: rgba(0,0,0,.55); --hud-text:#fff; --accent:#00d6ff;
   }
-  .cta {
-  position: fixed;           /* statt absolute */
-  top: 28vh;
-  left: 70%;
+ .cta {
+  position: fixed;
+  top: 240px;     /* feste Pixelposition */
+  left: 70%;      
   transform: translateX(-50%);
   background: rgba(249,216,73,0.9);
   color: #000;
@@ -50,10 +50,10 @@
   .wrap{position:relative;z-index:1;display:grid;place-items:center;height:100dvh;padding:16px}
   .stage {
   display: block;
-  width: min(36vw, 640px);
-  aspect-ratio: 1 / 1;
+  width: 640px;       /* feste Breite */
+  height: 640px;      /* feste Höhe – quadratisch */
   position: relative;
-  margin-top: 36vh;
+  margin: 240px auto 0;  /* Abstand von oben z. B. 240px */
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,.35);
