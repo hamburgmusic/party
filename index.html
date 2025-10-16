@@ -69,8 +69,8 @@
 /* 🔹 Mobile Version */
 @media (max-width: 768px) {
   .stage {
-    width: 100vw;          /* nutzt mehr Platz */
-    margin-top: 15vh auto 0;     /* etwas nach oben rücken */
+    width: 100vw;
+    margin: 15vh auto 0;
   }
 }
   canvas#game{position:relative;z-index:1;width:100%;height:100%;display:block;image-rendering:pixelated}
@@ -95,6 +95,12 @@
 </head>
 <body>
   <div class="wrap">
+     <a class="btn cta"
+         href="https://www.eventbrite.de/e/hamburg-music-party-tickets-1827848266369?aff=oddtdtcreator"
+         target="_blank"
+         rel="noopener">
+        Zur Anmeldung
+      </a>
     <div class="stage" id="stage">
       <canvas id="game"></canvas>
       <div class="hud">
@@ -106,12 +112,6 @@
           <button class="btn" id="btnRestart">Neu starten</button>
         </div>
       </div>
-      <a class="btn cta"
-         href="https://www.eventbrite.de/e/hamburg-music-party-tickets-1827848266369?aff=oddtdtcreator"
-         target="_blank"
-         rel="noopener">
-        Zur Anmeldung
-      </a>
       <div class="overlay" id="ovStart">
         <div class="card">
           <h1>Hamburg Music Party – Snake</h1>
