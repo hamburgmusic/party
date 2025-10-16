@@ -46,28 +46,8 @@
   html,body{height:100%;margin:0}
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans";
        color:var(--hud-text); overflow:hidden; background:#000;}
-  .wrap {
-  position: relative;
-  z-index: 1;
- display: grid;
-  justify-items: center;
-  align-items: start; /* statt center */
-  padding-top: 80vh; /* dann sitzt das Spielfeld immer mit 20 vh Abstand oben */
-  width: 100vw;
-  height: 100vh; /* statt 100dvh */
-  padding: 16px;
-  overflow: hidden; /* verhindert, dass etwas rausgeschoben wird */
-}
-.stage {
-  width: 80vmin;   /* vmin = kleinstes von vw/vh → skaliert quadratisch */
-  height: 80vmin;  /* bleibt immer vollständig sichtbar */
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,.35);
-  background: rgba(0,0,0,.25);
-  outline: 2px solid rgba(255,255,255,.08);
-}
+  .wrap{position:relative;z-index:1;display:grid;place-items:center;height:100dvh;padding:16px} 
+  .stage { display: block; width: min(36vw, 640px); aspect-ratio: 1 / 1; position: relative; margin-top: 36vh; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,.35); background: rgba(0,0,0,.25); outline: 2px solid rgba(255,255,255,.08); }
 
 /* 🔹 Mobile Version */
 @media (max-width: 768px) {
