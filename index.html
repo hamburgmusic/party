@@ -12,34 +12,29 @@
     --hud-bg: rgba(0,0,0,.55); --hud-text:#fff; --accent:#00d6ff;
   }
   .cta {
-  position: absolute;
-  top: 26vh;
-  left: 58%;
+  position: fixed;           /* statt absolute */
+  top: 28vh;
+  left: 60%;
   transform: translateX(-50%);
-  background: rgba(249,216,73,0.9); /* Gruenspan-Gelb */
+  background: rgba(249,216,73,0.9);
   color: #000;
   font-weight: 700;
   text-decoration: none;
   padding: 10px 18px;
   border-radius: 14px;
-  border: 3px solid rgba(249,216,73,1); /* dickere Umrandung */
+  border: 3px solid rgba(249,216,73,1);
   box-shadow: 0 0 20px rgba(249,216,73,0.6);
   transition: all 0.25s ease;
-  z-index: 3;
-}
-.cta:hover {
-  background: rgba(249,216,73,1);
-  box-shadow: 0 0 28px rgba(249,216,73,0.9);
+  z-index: 999;              /* deutlich über .overlay (z:3) */
 }
 @media (max-width: 768px) {
   .cta {
     top: 18vh;
-    left: 55%;
+    left: 60%;
     font-size: 15px;
     padding: 8px 14px;
   }
 }
-
   body::before{
     content:""; position:fixed; inset:0;
     background: var(--bg-desktop) center/cover no-repeat;
